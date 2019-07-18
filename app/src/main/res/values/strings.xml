@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">MesRecettes</string>
+    <string name="pop_titre1">Erreur</string>
+    <string name="pop_message1">Cet identifiant n\'existe pas</string>
+</resources>
