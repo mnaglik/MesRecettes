@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class Connexion {
 
@@ -35,8 +36,10 @@ public class Connexion {
 
                 if( userExist()){
                     if(isAdmin()){
-                       Intent intent = new Intent(activity.getApplicationContext(),AdminControler.class);
-                        activity.startActivity(intent);
+
+                     Intent intent = new Intent(activity.getApplicationContext(),AdminControler.class);
+                     activity.startActivity(intent);
+
                     }
                     else{
                         Intent intent = new Intent(activity.getApplicationContext(),MesRecettes.class);
@@ -65,16 +68,16 @@ public class Connexion {
     public Boolean userExist (){
         boolean bool = false;
 
-        if(identifiantExist()&& passwordExist()){
+        if(identifiantExist(txtIdentifiant.getText().toString()) && passwordExist(txtPassword.getText().toString()) ){
 
-            String ident = txtIdentifiant.getText().toString();
-            String pass = txtPassword.getText().toString();
-            String req = "SELECT * FROM users WHERE identifiant='"+ ident +"'  AND password ='"+ pass +"'";
+
+            String req = "SELECT * FROM users WHERE identifiant='"+ txtIdentifiant.getText().toString() +"'  AND password ='"+  txtPassword.getText().toString() +"'";
             Cursor cursor =dbm.getReadableDatabase().rawQuery(req, null);
             if(cursor.moveToFirst()) {
-                bool=true;
+               bool=true;
+
             }
-            else{AlertDialog.Builder pop = new AlertDialog.Builder(activity);
+           else{AlertDialog.Builder pop = new AlertDialog.Builder(activity);
                 pop.setTitle(activity.getResources().getString(R.string.pop_titre1));
                 pop.setMessage("l'idenfiant et le password ne correspondent pas.");
                 pop.setNeutralButton("CLOSE", new DialogInterface.OnClickListener() {
@@ -89,9 +92,9 @@ public class Connexion {
         return bool;
     }
 
-    public Boolean identifiantExist(){
+    public Boolean identifiantExist(String identifiant){
         boolean bool = false;
-        String identifiant = txtIdentifiant.getText().toString();
+
         String req = "SELECT * FROM users WHERE identifiant='"+identifiant+"'";
         Cursor cursor =dbm.getReadableDatabase().rawQuery(req, null);
 
@@ -114,8 +117,8 @@ public class Connexion {
         return bool;
     }
 
-    public Boolean passwordExist(){
-        String password = txtPassword.getText().toString();
+    public Boolean passwordExist(String password){
+
         boolean bool = false;
         String req = "SELECT * FROM users WHERE password='"+password+"'";
         Cursor cursor =dbm.getReadableDatabase().rawQuery(req, null);
