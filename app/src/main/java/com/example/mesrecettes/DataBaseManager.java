@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,9 +14,11 @@ public class DataBaseManager extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "users";
     private static final int DATABASE_VERSION = 2;
+    private Context context;
 
     public DataBaseManager(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        this.context = context;
     }
 
     @Override
@@ -36,32 +39,60 @@ public class DataBaseManager extends SQLiteOpenHelper {
         String identifiant = newUser.getIdentifiant();
         String password = newUser.getPassword();
         String level = newUser.getLevel();
-        String req = "INSERT INTO users(identifiant,password,level) VALUES('"+identifiant+"','"+password+"','"+level+"')";
-        this.getReadableDatabase().execSQL(req);
+
+
+        Users user = getOneId(newUser.getIdentifiant());
+
+        Log.i("TestUser",""+user);
+
+        if(user!=null){
+            Toast.makeText(context, "l'utilisateur existe deja", Toast.LENGTH_SHORT).show();
+        }else {
+            String req = "INSERT INTO users(identifiant,password,level) VALUES('" + identifiant + "','" + password + "','" + level + "')";
+            this.getReadableDatabase().execSQL(req);
+        }
     }
 
     public void Delete (int id){
         String req = "DELETE FROM users WHERE id= '"+id+"'";
         this.getReadableDatabase().execSQL(req);
-        Log.i("del","del ok");
+        Toast.makeText(context, "l'utilisateur est supprimé", Toast.LENGTH_SHORT).show();
     }
 
-    public void update (Users newUser){
 
-        String req = "UPDATE users SET identifiant= '"+newUser.getIdentifiant()+"',password= '"+newUser.getPassword()+"' ,level= '"+newUser.getLevel()+"'WHERE id= '"+newUser.getId()+"'";
-        this.getReadableDatabase().execSQL(req);
-    }
+
 
     public Users getOne (int id){
-         String req = "SELECT * FROM users WHERE id='"+id+"' ";
-         Cursor cursor =this.getReadableDatabase().rawQuery(req, null);
-         cursor.moveToFirst();
-         Users user = new Users(cursor.getInt(0),cursor.getString(1),cursor.getString(2),cursor.getString(3));
+        Users user ;
+        String req = "SELECT * FROM users WHERE id='"+id+"' ";
+        Cursor cursor =this.getReadableDatabase().rawQuery(req, null);
 
-         return user;
+        if(cursor.getCount()>0) {
+            cursor.moveToFirst();
+            user = new Users(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3));
+        }else{
+            user = null;
+        }
+
+        return user;
 
     }
 
+    public Users getOneId (String identifiant){
+        Users user ;
+        String req = "SELECT * FROM users WHERE identifiant='"+identifiant+"' ";
+        Cursor cursor =this.getReadableDatabase().rawQuery(req, null);
+
+        if(cursor.getCount()>0) {
+            cursor.moveToFirst();
+            user = new Users(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3));
+        }else{
+            user = null;
+        }
+
+        return user;
+
+    }
     public List<Users> getAll (){
         List<Users> users = new ArrayList<>();
         String req = "SELECT * FROM users ";

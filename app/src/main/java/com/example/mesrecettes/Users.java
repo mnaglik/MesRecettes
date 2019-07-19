@@ -13,6 +13,9 @@ public class Users {
         this.id = id;
     }
 
+    public Users() {
+    }
+
     public Users(int id, String identifiant, String password, String level) {
         this.id = id;
         this.identifiant = identifiant;
