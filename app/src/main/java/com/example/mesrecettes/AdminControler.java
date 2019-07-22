@@ -16,7 +16,7 @@ import android.widget.Toast;
 
 import java.util.List;
 
-public class AdminControler extends AppCompatActivity {
+public class AdminControler extends AppCompatActivity { //classe qui permetla gestion des users
 
     private DataBaseManager dbm;
     private Button btnIns,btnDel,btnUp,btnReset;
@@ -30,6 +30,7 @@ public class AdminControler extends AppCompatActivity {
 
     private Users user;
 
+    //lors de son instanciation l'adminControler active les éléments de sa vue, active le databasemanager, et active les boutons
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,18 +41,22 @@ public class AdminControler extends AppCompatActivity {
         txtLevel=findViewById(R.id.levelToget);
 
         activity = new MainActivity();
-       // connex = new Connexion(activity);
+
         dbm = new DataBaseManager(this);
         createBtn();
 
         createListeUsers();
 
     }
+
+    //permet l'affichage de la liste des users
     public void createListeUsers(){
         // instanciation de la liste de users
         listUsers = dbm.getAll();
         lv.setAdapter(new AdapterListUsers(this,listUsers));
     }
+
+    //methode qui cré un user a partir des info présentent dans les champs, methode utilisée a plusieurs reprise
     public Users createSeeUser(){
 
         if(txtIdentifiant.getText().toString().matches("")||txtLevel.getText().toString().matches("")||txtPassword.getText().toString().matches("")) {
@@ -79,6 +84,8 @@ public class AdminControler extends AppCompatActivity {
         return user;
     }
 
+
+    //methode qui active les differents étéments de la vue
     public void createBtn(){
 
  //Creation de la liste des users
@@ -101,13 +108,16 @@ public class AdminControler extends AppCompatActivity {
        btnDel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(!"".equals(txtIdentifiant.getText().toString())&&!"".equals(txtPassword.getText().toString())&&!"".equals(txtLevel.getText().toString())) {
                 createSeeUser();
 
                dbm.Delete(createSeeUser().getId());
 
                Toast.makeText(getApplicationContext(), "delete ok", Toast.LENGTH_SHORT).show();
                 createListeUsers();
-            }
+            }else {
+                    Toast.makeText(getApplicationContext(), "veuillez remplir les champs", Toast.LENGTH_SHORT).show();
+                }}
         });
 
 //Creation du bouton insert
@@ -115,17 +125,21 @@ public class AdminControler extends AppCompatActivity {
         btnIns.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                    Users user = new Users(0,txtIdentifiant.getText().toString(),txtPassword.getText().toString(),txtLevel.getText().toString());
+                if(!"".equals(txtIdentifiant.getText().toString())&&!"".equals(txtPassword.getText().toString())&&!"".equals(txtLevel.getText().toString())) {
+                    Users user = new Users(0, txtIdentifiant.getText().toString(), txtPassword.getText().toString(), txtLevel.getText().toString());
                     dbm.insert(user);
                     Toast.makeText(getApplicationContext(), "ok", Toast.LENGTH_SHORT).show();
-                createListeUsers();
+                    createListeUsers();
+                }else {
+                    Toast.makeText(getApplicationContext(), "veuillez remplir les champs", Toast.LENGTH_SHORT).show();
+                }
 
             }
+
         });
 
 
-
+//création du bouton reset
        btnReset=findViewById(R.id.btnReset);
        btnReset.setOnClickListener(new View.OnClickListener() {
             @Override

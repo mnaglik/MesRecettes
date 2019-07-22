@@ -10,17 +10,19 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DataBaseManager extends SQLiteOpenHelper {
+public class DataBaseManager extends SQLiteOpenHelper { //classe qui permet de gerer les entrées/sorties de la BDD
 
     private static final String DATABASE_NAME = "users";
     private static final int DATABASE_VERSION = 2;
     private Context context;
 
+    //lors de son instanciation le constructeur donne un nom et un numero de version à la bdd
     public DataBaseManager(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         this.context = context;
     }
 
+    //methode lancée lors de l'instanciation, crée la table avce des colonnes. ATTENTION!! la table ne cré que si on y insert uneentrée.
     @Override
     public void onCreate(SQLiteDatabase db) {
         String req = "CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT,identifiant VARCHAR(255) NOT NULL,password VARCHAR(55) NOT NULL,level VARCHAR(55) NOT NULL)";
@@ -30,11 +32,13 @@ public class DataBaseManager extends SQLiteOpenHelper {
 
     }
 
+    // dans le cas ou l'on souhaite modifier la table il faut untiliser cette methode, y inserer la requete demandée et changer le numéro de version de la bdd.
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
     }
 
+    //mthode qui permet d'insérer des entrées dans la bdd.
     public void insert(Users newUser){
         String identifiant = newUser.getIdentifiant();
         String password = newUser.getPassword();
@@ -43,16 +47,16 @@ public class DataBaseManager extends SQLiteOpenHelper {
 
         Users user = getOneId(newUser.getIdentifiant());
 
-        Log.i("TestUser",""+user);
-
-        if(user!=null){
-            Toast.makeText(context, "l'utilisateur existe deja", Toast.LENGTH_SHORT).show();
-        }else {
-            String req = "INSERT INTO users(identifiant,password,level) VALUES('" + identifiant + "','" + password + "','" + level + "')";
-            this.getReadableDatabase().execSQL(req);
-        }
+        //  en premier lieu on verifie que le user n'existe pas deja.
+            if(user!=null){
+                Toast.makeText(context, "l'utilisateur existe deja", Toast.LENGTH_SHORT).show();
+            }else {
+                String req = "INSERT INTO users(identifiant,password,level) VALUES('" + identifiant + "','" + password + "','" + level + "')";
+                this.getReadableDatabase().execSQL(req);
+            }
     }
 
+    //methode pour supprimer un user
     public void Delete (int id){
         String req = "DELETE FROM users WHERE id= '"+id+"'";
         this.getReadableDatabase().execSQL(req);
@@ -61,7 +65,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
 
 
 
-
+    //methode pour sélectionner un user en fonction de'un id.
     public Users getOne (int id){
         Users user ;
         String req = "SELECT * FROM users WHERE id='"+id+"' ";
@@ -78,6 +82,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
 
     }
 
+    //methode pour selectionner un utilisateur en fonction de son idenfiant.
     public Users getOneId (String identifiant){
         Users user ;
         String req = "SELECT * FROM users WHERE identifiant='"+identifiant+"' ";
@@ -93,6 +98,8 @@ public class DataBaseManager extends SQLiteOpenHelper {
         return user;
 
     }
+
+    //methode qui sort une liste de tous les user.
     public List<Users> getAll (){
         List<Users> users = new ArrayList<>();
         String req = "SELECT * FROM users ";

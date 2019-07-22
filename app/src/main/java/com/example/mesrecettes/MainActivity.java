@@ -20,8 +20,12 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView btnConnexion, btnInscription;
     private EditText txtIdentifiant, txtPassword;
+
+    //declaration de l'activité qui permet la gestion des users
     private DataBaseManager dbm;
+    //declaration de l aclasse qui permet l'utilisation des fenetre de message pop
     private AlertDialog.Builder pop;
+
 
 
     @Override
@@ -29,21 +33,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        //Connexion connexion = new Connexion(this);
+//lors de son lancement la mainActivity active s le boutons + instancie un eliste de tous les users
         dbm = new DataBaseManager(this);
         init();
         listener();
-
-       List<Users> liste = dbm.getAll();
-
-        for (Users user: liste){
-            Log.i("getall", ""+user.getIdentifiant());
-        }
-
+        List<Users> liste = dbm.getAll();
 
 
     }
-
+//methode qui declare les éléments de la page
     public void init(){
         btnConnexion = findViewById(R.id.btnConnexion);
         btnInscription = findViewById(R.id.btnInscription);
@@ -51,19 +49,22 @@ public class MainActivity extends AppCompatActivity {
         txtPassword = findViewById(R.id.txtPassword);
     }
 
+
+ //methode qui active le bouton connexion, 2cas de figure admin ou user.
     public void listener(){
         btnConnexion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                // on verifie si le user est dans la bdd puis si il est admin ou pas.
                 if( userExist()){
                     if(isAdmin()){
-
+                        // ouvre une page de gestion des users
                         Intent intent = new Intent(getApplicationContext(),AdminControler.class);
                        startActivity(intent);
 
                     }
                     else{
+                        //ouvre la pege d'activité de l'appli
                         Intent intent = new Intent(getApplicationContext(),MesRecettes.class);
                        startActivity(intent);
                     }
@@ -72,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        //methode qui active le bouton inscription, ouvre une boite mail avec un message préprogrammé.
         btnInscription.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -86,19 +88,21 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
+//methode qui verifie que l'utilisateur qui veut se connecter existe
     public Boolean userExist (){
         boolean bool = false;
 
+            //d'abord on verifie que l'identifiant ET le password existe grace aux methodes respectives
         if(identifiantExist(txtIdentifiant.getText().toString(),dbm) && passwordExist(txtPassword.getText().toString(),dbm) ){
 
-
+            //on va chercher le user correspondant dans la bdd
             String req = "SELECT * FROM users WHERE identifiant='"+ txtIdentifiant.getText().toString() +"'  AND password ='"+  txtPassword.getText().toString() +"'";
             Cursor cursor = dbm.getReadableDatabase().rawQuery(req, null);
             if(cursor.moveToFirst()) {
                 bool=true;
 
             }
+            //si il n'existe pas message d'erreur
             else{
                 pop = new AlertDialog.Builder(this);
                 this.pop.setTitle(getResources().getString(R.string.pop_titre1));
@@ -114,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
         }
         return bool;
     }
-
+//verifie que l'identifiant existe (a condition que les champs soient remplis) dans la bdd sinon pop
     public Boolean identifiantExist(String identifiant, DataBaseManager dbm){
         boolean bool = false;
 
@@ -122,48 +126,59 @@ public class MainActivity extends AppCompatActivity {
         Cursor cursor = dbm.getReadableDatabase().rawQuery(req, null);
         Log.i("ID",""+cursor.getCount());
 
-        if(cursor.getCount()>0){
-            bool = true;
-            Toast.makeText(getApplicationContext(), "lidebtifiant existe ", Toast.LENGTH_SHORT).show();
-        }else{
-            pop = new AlertDialog.Builder(this);
-            pop.setTitle(getResources().getString(R.string.pop_titre1));
-            pop.setMessage(getResources().getString(R.string.pop_message1));
-            pop.setNeutralButton("CLOSE", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                }
-            });
-            pop.show();
-        }
+       if(!identifiant.matches("")){
+           if(cursor.getCount()>0){
+               bool = true;
+           }
+           else{
+               pop = new AlertDialog.Builder(this);
+               pop.setTitle(getResources().getString(R.string.pop_titre1));
+               pop.setMessage(getResources().getString(R.string.pop_message1));
+               pop.setNeutralButton("CLOSE", new DialogInterface.OnClickListener() {
+                   @Override
+                   public void onClick(DialogInterface dialogInterface, int i) {
+                   }
+               });
+               pop.show();
+           }
+       }else{
+           Toast.makeText(this, "veuillez remplir tous les champs", Toast.LENGTH_SHORT).show();
+       }
 
         return bool;
     }
 
+    //verifie que le password existe dans la bdd (a condition que le champs soit rempli sinon pop
     public Boolean passwordExist(String password,DataBaseManager dbm){
 
         boolean bool = false;
         String req = "SELECT * FROM users WHERE password='"+password+"'";
         Cursor cursor =dbm.getReadableDatabase().rawQuery(req, null);
 
-        if (cursor.moveToFirst()){
-            bool=true;
-        }
-        else{
-            pop = new AlertDialog.Builder(this);
-            this.pop.setTitle(this.getResources().getString(R.string.pop_titre1));
-            this.pop.setMessage("ce password n'existe pas");
-            this.pop.setNeutralButton("CLOSE", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                }
-            });
-            this.pop.show();
+        if(!password.matches("")){
+            if (cursor.moveToFirst()){
+                bool=true;
+            }
+            else{
+                pop = new AlertDialog.Builder(this);
+                this.pop.setTitle(this.getResources().getString(R.string.pop_titre1));
+                this.pop.setMessage("ce password n'existe pas");
+                this.pop.setNeutralButton("CLOSE", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                    }
+                });
+                this.pop.show();
 
+            }
+        }else{
+            Toast.makeText(this, "veuillez remplir tous les champs", Toast.LENGTH_SHORT).show();
         }
+
         return bool;
     }
 
+    //verifie si l'utilisateur est admin
     public Boolean isAdmin(){
         boolean bool = false;
 

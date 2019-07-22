@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
-public class AdapterListUsers extends BaseAdapter {
+public class AdapterListUsers extends BaseAdapter { //activité qui permet l'affichage de la liste des users
     private Context context;
     private List<Users> listUsers;
     private LayoutInflater inflater;
@@ -20,22 +20,25 @@ public class AdapterListUsers extends BaseAdapter {
         this.inflater = LayoutInflater.from(context);
     }
 
-
+//methode qui permet de savoir combien de users il ya a dans la table
     @Override
     public int getCount() {
         return listUsers.size();
     }
 
+    //permet de recupere un user en fonction de sa position dans la liste
     @Override
     public Object getItem(int position) {
         return listUsers.get(position);
     }
 
+    //permet de recupere l'id du user a la position donnée
     @Override
     public long getItemId(int position) {
         return listUsers.get(position).getId();
     }
 
+    //permet d'inserer les user à la vue.
     @Override
     public View getView(int position, View convertView, ViewGroup viewGroup) {
         convertView = inflater.inflate(R.layout.layout_user,null);
