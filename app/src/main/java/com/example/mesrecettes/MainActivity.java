@@ -2,7 +2,6 @@ package com.example.mesrecettes;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,6 +12,12 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.mesrecettes.controler.AdminControler;
+import com.example.mesrecettes.controler.RecettesControler;
+import com.example.mesrecettes.dataBaseManager.DataBaseManager;
+import com.example.mesrecettes.dataBaseManager.DataBaseManager_Recette;
+import com.example.mesrecettes.model.Users;
 
 import java.util.List;
 
@@ -26,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     //declaration de l aclasse qui permet l'utilisation des fenetre de message pop
     private AlertDialog.Builder pop;
 
+    private DataBaseManager_Recette dbmR;
 
 
     @Override
@@ -39,14 +45,17 @@ public class MainActivity extends AppCompatActivity {
         listener();
         List<Users> liste = dbm.getAll();
 
+        dbmR = new DataBaseManager_Recette(this);
+
+
 
     }
 //methode qui declare les éléments de la page
     public void init(){
         btnConnexion = findViewById(R.id.btnConnexion);
         btnInscription = findViewById(R.id.btnInscription);
-        txtIdentifiant = findViewById(R.id.txtIdentifiant);
-        txtPassword = findViewById(R.id.txtPassword);
+        txtIdentifiant = findViewById(R.id.txtnom);
+        txtPassword = findViewById(R.id.txtcategorie);
     }
 
 
@@ -59,13 +68,13 @@ public class MainActivity extends AppCompatActivity {
                 if( userExist()){
                     if(isAdmin()){
                         // ouvre une page de gestion des users
-                        Intent intent = new Intent(getApplicationContext(),AdminControler.class);
+                        Intent intent = new Intent(getApplicationContext(), AdminControler.class);
                        startActivity(intent);
 
                     }
                     else{
                         //ouvre la pege d'activité de l'appli
-                        Intent intent = new Intent(getApplicationContext(),MesRecettes.class);
+                        Intent intent = new Intent(getApplicationContext(), RecettesControler.class);
                        startActivity(intent);
                     }
 

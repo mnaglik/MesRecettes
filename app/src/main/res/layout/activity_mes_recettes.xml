@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/coffee"
-    tools:context=".MesRecettes" >
+    tools:context=".controler.RecettesControler" >
 
     <LinearLayout
         android:layout_width="294dp"

@@ -10,13 +10,13 @@
         android:text="TextView" />
 
     <TextView
-        android:id="@+id/txtIdentifiant"
+        android:id="@+id/txtnom"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:text="TextView" />
 
     <TextView
-        android:id="@+id/txtPassword"
+        android:id="@+id/txtcategorie"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:text="TextView" />
